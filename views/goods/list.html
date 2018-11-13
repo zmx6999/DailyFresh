@@ -1,0 +1,70 @@
+<div class="breadcrumb">
+    <a href="/">全部分类</a>
+    <span>></span>
+    <a href="">{{.goodsType.Name}}</a>
+</div>
+
+<div class="main_wrap clearfix">
+    <div class="l_wrap fl clearfix">
+        <div class="new_goods">
+            <h3>新品推荐</h3>
+            <ul>
+				{{range .newgoods}}
+                <li>
+                    <a href="/goods/detail?id={{.Id}}"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.Image}}"></a>
+                    <h4><a href="/goods/detail?id={{.Id}}">{{.Name}}</a></h4>
+                    <div class="prize">￥{{.Price}}</div>
+                </li>
+				{{end}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="r_wrap fr clearfix">
+        <div class="sort_bar">
+            <a href="/goods/list?id={{.goodsType.Id}}" {{if compare .sort ""}}class="active"{{end}}>默认</a>
+            <a href="/goods/list?id={{.goodsType.Id}}&sort=price" {{if compare .sort "price"}}class="active"{{end}}>价格</a>
+            <a href="/goods/list?id={{.goodsType.Id}}&sort=sales" {{if compare .sort "sales"}}class="active"{{end}}>人气</a>
+        </div>
+
+        <ul class="goods_type_list clearfix">
+			{{range .goodsList}}
+            <li>
+                <a href="/goods/detail?id={{.Id}}"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.Image}}"></a>
+                <h4><a href="/goods/detail?id={{.Id}}">{{.Name}}</a></h4>
+                <div class="operate">
+                    <span class="prize">￥{{.Price}}</span>
+                    <span class="unit">{{.Price}}/{{.Unite}}</span>
+                    <a onclick="addCart({{.Id}})" href="javascript:" class="add_goods" title="加入购物车"></a>
+                </div>
+            </li>
+			{{end}}
+        </ul>
+
+        <div class="pagenation">
+            <a href="/goods/list?id={{.goodsType.Id}}&sort={{.sort}}&p={{prepage .page}}">&lt;上一页</a>
+            {{range $k,$v:=.pages}}<a href="/goods/list?id={{$.goodsType.Id}}&sort={{$.sort}}&p={{$v}}" {{if compare $.page $v}}class="active"{{end}}>{{$v}}</a>{{end}}
+            <a href="/goods/list?id={{.goodsType.Id}}&sort={{.sort}}&p={{nextpage .page .pageCount}}">下一页&gt;</a>
+        </div>
+	</div>
+</div>
+<script>
+    function addCart(id) {
+        $.ajax({
+            method:"POST",
+            url:"/cart/add",
+            data:{
+                goods_id:id,
+                num:1
+            },
+            dataType:"json",
+            success:function (d) {
+                if (d.code==0) {
+                    $("#show_count").text(d.data)
+                } else {
+                    alert(d.msg)
+                }
+            }
+        })
+    }
+</script>

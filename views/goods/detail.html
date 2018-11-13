@@ -1,0 +1,116 @@
+<div class="breadcrumb">
+    <a href="/">全部分类</a>
+    <span>></span>
+    <a href="/goods/list?id={{.goods.GoodsType.Id}}">{{.goods.GoodsType.Name}}</a>
+    <span>></span>
+    <a href="">商品详情</a>
+</div>
+
+<div class="goods_detail_con clearfix">
+    <div class="goods_detail_pic fl"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.goods.Image}}" width="350"></div>
+
+    <div class="goods_detail_list fr">
+        <h3>{{.goods.Name}}</h3>
+        <p>{{.goods.Goods.Detail}}</p>
+        <div class="prize_bar">
+            <span class="show_pirze">¥<em id="price">{{.goods.Price}}</em></span>
+            <span class="show_unit">单  位：{{.goods.Unite}}</span>
+        </div>
+        <div class="goods_num clearfix">
+            <div class="num_name fl">数 量：</div>
+            <div class="num_add fl">
+                <input type="text" class="num_show fl" value="1">
+                <a href="javascript:;" class="add fr">+</a>
+                <a href="javascript:;" class="minus fr">-</a>
+            </div>
+        </div>
+        <div class="total">总价：<em id="total">16.80元</em></div>
+        <div class="operate_btn">
+            <a href="javascript:;" class="buy_btn">立即购买</a>
+            <a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>
+        </div>
+    </div>
+</div>
+
+<div class="main_wrap clearfix">
+    <div class="l_wrap fl clearfix">
+        <div class="new_goods">
+            <h3>新品推荐</h3>
+            <ul>
+				{{range .newgoods}}
+                <li>
+                    <a href="/goods/detail?id={{.Id}}"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.Image}}"></a>
+                    <h4><a href="/goods/detail?id={{.Id}}">{{.Name}}</a></h4>
+                    <div class="prize">￥{{.Price}}</div>
+                </li>
+				{{end}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="r_wrap fr clearfix">
+        <ul class="detail_tab clearfix">
+            <li class="active">商品介绍</li>
+            <li>评论</li>
+        </ul>
+
+        <div class="tab_content">
+            <dl>
+                <dt>商品详情：</dt>
+                <dd>{{.goods.Desc}}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<script>
+    $(".add").click(function () {
+        var num = parseInt($(".num_show").val())
+        num += 1
+        $(".num_show").val(num)
+        updatePrice()
+    })
+
+    $(".minus").click(function () {
+        var num = parseInt($(".num_show").val())
+        num -= 1
+        if (num<1) num = 1
+        $(".num_show").val(num)
+        updatePrice()
+    })
+
+    $(".num_show").blur(function () {
+        var num = $(".num_show").val()
+        if (isNaN(num) || num.trim().length==0 || parseInt(num)<1) num = 1
+        num = parseInt(num)
+        $(".num_show").val(num)
+        updatePrice()
+    })
+
+    function updatePrice() {
+        var price = parseFloat($("#price").text())
+        var num = parseInt($(".num_show").val())
+        var total = price*num
+        $("#total").text(total.toFixed(2))
+    }
+
+    updatePrice()
+
+    $("#add_cart").click(function () {
+        $.ajax({
+            method:"POST",
+            url:"/cart/add",
+            data:{
+                goods_id:{{.goods.Id}},
+                num:parseInt($(".num_show").val())
+            },
+            dataType:"json",
+            success:function (d) {
+                if (d.code==0) {
+                    $("#show_count").text(d.data)
+                } else {
+                    alert(d.msg)
+                }
+            }
+        })
+    })
+</script>

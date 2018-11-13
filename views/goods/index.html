@@ -1,0 +1,56 @@
+<div class="navbar_con">
+    <div class="navbar">
+        <h1 class="fl">全部商品分类</h1>
+        <ul class="navlist fl">
+            <li><a href="/">首页</a></li>
+            <li class="interval">|</li>
+            <li><a href="">手机生鲜</a></li>
+            <li class="interval">|</li>
+            <li><a href="">抽奖</a></li>
+        </ul>
+    </div>
+</div>
+<div class="center_con clearfix">
+    <ul class="subnav fl">
+	{{range .types}}<li><a href="/goods/list?id={{.Id}}" class="{{.Logo}}">{{.Name}}</a></li>{{end}}
+    </ul>
+    <div class="slide fl">
+        <ul class="slide_pics">
+            {{range .bannerList}}
+            <li><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.Image}}"></li>
+			{{end}}
+        </ul>
+        <div class="prev"></div>
+        <div class="next"></div>
+        <ul class="points"></ul>
+    </div>
+    <div class="adv fl">
+        {{range .promotionList}}
+        <a href="{{.Url}}"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.Image}}"></a>
+		{{end}}
+    </div>
+</div>
+{{range .goodsList}}
+<div class="list_model">
+    <div class="list_title clearfix">
+        <h3 class="fl" id="model02">{{.type.Name}}</h3>
+        <div class="subtitle fl">
+            <span>|</span>
+            {{range .textGoodsList}}<a href="/goods/detail?id={{.GoodsSKU.Id}}">{{.GoodsSKU.Name}}</a>{{end}}
+        </div>
+        <a href="/goods/list?id={{.type.Id}}" class="goods_more fr">查看更多 ></a>
+    </div>
+
+    <div class="goods_con clearfix">
+        <div class="goods_banner fl"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.type.Image}}"></div>
+        <ul class="goods_list fl">
+			{{range .imageGoodsList}}
+            <li>
+                <h4><a href="/goods/detail?id={{.GoodsSKU.Id}}">{{.GoodsSKU.Name}}</a></h4>
+                <a href="/goods/detail?id={{.GoodsSKU.Id}}"><img src="http://{{getconfig "fdfs_host"}}:{{getconfig "fdfs_port"}}/{{.GoodsSKU.Image}}"></a>
+                <div class="prize">¥ {{.GoodsSKU.Price}}</div>
+            </li>
+			{{end}}
+        </ul>
+    </div>
+</div>{{end}}
