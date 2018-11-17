@@ -10,6 +10,8 @@ import (
 	"bytes"
 	"github.com/astaxie/beego/orm"
 	"strconv"
+	"math/rand"
+	"time"
 )
 
 type BaseController struct {
@@ -112,4 +114,45 @@ func (this *BaseController) GetCartNum() int {
 		cartnum+=v
 	}
 	return cartnum
+}
+
+func (this *BaseController) GetId(id int,table string,length int) string {
+	conn,_:=redis.Dial("tcp",beego.AppConfig.String("redis_host")+":"+beego.AppConfig.String("redis_port"))
+	defer conn.Close()
+
+	r,err:=redis.String(conn.Do("hget","rand",table))
+	if err!=nil {
+		r=""
+		rand.Seed(time.Now().Unix())
+		a:=[]int{1,2,3,4,5,6,7,8,9}
+		n:=len(a)
+		for n>0 {
+			k:=rand.Intn(n)
+			r+=strconv.Itoa(a[k])
+			a=append(a[:k],a[k+1:]...)
+			n=len(a)
+		}
+		conn.Do("hset","rand",table,r)
+	}
+
+	m:=id
+	y:=""
+	n:=len(r)
+	for m>0 {
+		x:=m%n
+		y=string([]byte(r)[x])+y
+		m=m/n
+	}
+
+	first:=true
+	for len(y)<length {
+		if first {
+			y="0"+y
+			first=false
+		} else {
+			y=strconv.Itoa(rand.Intn(9)+1)+y
+		}
+	}
+
+	return y
 }

@@ -55,7 +55,7 @@ func (this *OrderController) AddOrder()  {
 
 	var order models.OrderInfo
 	loc,_:=time.LoadLocation("Asia/Saigon")
-	order.OrderId=time.Now().In(loc).Format("20060102150405")+strconv.Itoa(user.Id)
+	order.OrderId=""
 	order.User=&user
 	order.Address=&address
 	order.PayMethod=paystyle
@@ -117,6 +117,7 @@ func (this *OrderController) AddOrder()  {
 
 	order.TotalPrice=totalprice+order.TransitPrice
 	order.TotalCount=totalnum
+	order.OrderId=this.GetId(order.Id,"OrderInfo",10)
 	if _,err=o.Update(&order);err!=nil {
 		o.Rollback()
 		this.Data["json"]=&ResponseJSON{-1,nil,"failed to add order"}
