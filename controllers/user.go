@@ -11,6 +11,8 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"math"
 	"strings"
+	"181112/OTP"
+	"crypto/sha256"
 )
 
 type UserController struct {
@@ -64,7 +66,15 @@ func (this *UserController) HandleRegister()  {
 	mail.From="563364657@qq.com"
 	mail.To=[]string{email}
 	mail.Subject="Register"
-	mail.Text="Click http://"+beego.AppConfig.String("host")+":"+beego.AppConfig.String("httpport")+"/active?id="+strconv.Itoa(user.Id)
+
+	otpKey:=this.Sha256Str("name="+name+"&password="+pwd)
+	otpConfig:=otp.OTPConfig{otpKey,sha256.New}
+	activeCode:=otpConfig.GenerateTOTP(60,8)
+	conn,_:=redis.Dial("tcp",beego.AppConfig.String("redis_host")+":"+beego.AppConfig.String("redis_port"))
+	defer conn.Close()
+	conn.Do("hset","activecode",user.Id,activeCode)
+
+	mail.Text="Click http://"+beego.AppConfig.String("host")+":"+beego.AppConfig.String("httpport")+"/active?id="+base64.StdEncoding.EncodeToString([]byte(strconv.Itoa(user.Id)))+"&activecode="+activeCode
 	mail.Send()
 
 	this.Data["json"]=&ResponseJSON{0,nil,"OK"}
@@ -72,7 +82,15 @@ func (this *UserController) HandleRegister()  {
 }
 
 func (this *UserController) Active()  {
-	id,err:=this.GetInt("id")
+	idstr:=this.GetString("id")
+	activeCode:=this.GetString("activecode")
+	if idstr=="" || activeCode=="" {
+		this.Ctx.WriteString("not found")
+		return
+	}
+
+	t,_:=base64.StdEncoding.DecodeString(idstr)
+	id,err:=strconv.Atoi(string(t))
 	if err!=nil {
 		this.Ctx.WriteString("not found")
 		return
@@ -86,12 +104,20 @@ func (this *UserController) Active()  {
 		return
 	}
 
+	conn,_:=redis.Dial("tcp",beego.AppConfig.String("redis_host")+":"+beego.AppConfig.String("redis_port"))
+	defer conn.Close()
+	code,_:=redis.String(conn.Do("hget","activecode",id))
+	if activeCode!=code {
+		this.Ctx.WriteString("not found")
+		return
+	}
+
 	user.Active=true
 	if _,err:=o.Update(&user);err!=nil {
 		this.Ctx.WriteString("failed to active")
 		return
 	}
-
+	conn.Do("hdel","activecode",id)
 	this.Redirect("/login",302)
 }
 
