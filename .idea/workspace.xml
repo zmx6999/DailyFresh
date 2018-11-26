@@ -4,6 +4,9 @@
     <list default="true" id="1c13a675-a5d4-4bd1-854b-8e120a48aa8e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/order.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/order.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/download/0a699f47dc4fc55deaa82402cc0876ea_big.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/download/3279944_20180831104533_small.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/download/5230163_20181019161115_small.jpg" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -187,7 +190,7 @@
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1280" />
-    <option name="height" value="737" />
+    <option name="height" value="736" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -312,8 +315,7 @@
     </recent_temporary>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="737" extended-state="6" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1280" height="736" extended-state="6" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.29159936" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
