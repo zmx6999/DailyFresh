@@ -84,12 +84,15 @@ func (this *OrderController) AddOrder()  {
 		ordergoods.GoodsSKU=&goods
 
 		num,_:=redis.Int(conn.Do("hget","cart_"+strconv.Itoa(user.Id),goodsId))
-		if num>goods.Stock {
+		/*if num>goods.Stock {
 			o.Rollback()
 			this.Data["json"]=&ResponseJSON{-1,nil,goods.Name+" shortage"}
 			this.ServeJSON()
 			return
-		}
+		}*/
+
+		time.Sleep(time.Second*10)
+
 		ordergoods.Count=num
 		ordergoods.Price=goods.Price*num
 
@@ -102,9 +105,16 @@ func (this *OrderController) AddOrder()  {
 
 		goods.Stock-=num
 		goods.Sales+=num
-		if _,err:=o.Update(&goods);err!=nil {
+		n,err:=o.QueryTable("GoodsSKU").Filter("Id",goods.Id).Filter("Stock__gte",num).Update(orm.Params{"Stock":goods.Stock,"Sales":goods.Sales})
+		if err!=nil {
 			o.Rollback()
 			this.Data["json"]=&ResponseJSON{-1,nil,"failed to add order"}
+			this.ServeJSON()
+			return
+		}
+		if n==0 {
+			o.Rollback()
+			this.Data["json"]=&ResponseJSON{-1,nil,goods.Name+" shortage"}
 			this.ServeJSON()
 			return
 		}
